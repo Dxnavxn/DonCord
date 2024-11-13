@@ -1,0 +1,8 @@
+1. client connection sent to other clients -DONE-
+2. client disconnection sent to other clients -DONE-
+3. Colors:
+    Client Connected Color -DONE-
+    Client Disconnected Color -DONE-
+    Sever Log Color
+4. Client shows "You:" instead of chosen username
+5. Fake Loading?????
