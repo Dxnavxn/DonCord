@@ -6,7 +6,7 @@ from colorama import Fore, Back, Style
 
 #INIT
 HOST = 'localhost'
-PORT = 5000
+PORT = 4998
 BUFSIZE = 1024
 ADDRESS =(HOST,PORT)
 

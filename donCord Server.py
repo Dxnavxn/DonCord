@@ -5,7 +5,7 @@ from colorama import Fore, Back, Style
 
 
 HOST = 'localhost'
-PORT = 5000  # Port should be between 1024-9999 for non-root users
+PORT = 4998  # Port should be between 1024-9999 for non-root users
 BUFSIZE = 1024
 ADDRESS = (HOST, PORT)
 
@@ -20,17 +20,22 @@ def start():  # Creates Socket and Listens for Connections
     
     while True:
         client, addr = serverSocket.accept()
-        print(f"Connected With {addr}")
+        print(f"{Fore.YELLOW}Connected With: {addr}")
+        print(Style.RESET_ALL) #Resets text style
+        
         client.send("Enter a Username: ".encode())# Prompt client for username
         username = client.recv(BUFSIZE).decode()
         users[username] = client  # Store the username and client socket
-        print(f'Connected Users: {list(users.keys())}') #Shows Users Connected, I still have no idea what _ means
+        print(f'{Style.BRIGHT}Connected Users: {list(users.keys())}') #Shows Users Connected On Dictionary
         client.send(f'Number of Connected Users: {len(users)}'.encode())
+
         
         connectionMessage = (f'{Fore.GREEN}---{username} connected---')
         print(Style.RESET_ALL) #Resets text style
         chatSend(connectionMessage, client) #Sends Client Connected Message To Other Clients
-        print(f'---Number of Connected Clients: {len(users)}---') #Server Logs Number Of Connections
+        
+        print(f'{Fore.CYAN}---Number of Connected Clients: {len(users)}---') #Server Logs Number Of Connections
+        print(Style.RESET_ALL) #Resets text style
 
         # Start threads for reading and sending messages
         clientRead = threading.Thread(target=chatRead, args=(client, username)) #Makes Reading Thread
