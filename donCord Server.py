@@ -3,7 +3,6 @@ import threading
 import colorama
 from colorama import Fore, Back, Style
 
-
 HOST = 'localhost'
 PORT = 4998
 BUFSIZE = 1024
@@ -23,7 +22,7 @@ def loadLogin(): # Loads The Login Text File
         file.close()
     except FileNotFoundError:
         print("Login file not found. A new one will be created.")
-    except Exception as e: 
+    except Exception as e: # For any other error
         print(f"An error occurred: {e}")
     return login
 
@@ -42,6 +41,7 @@ def loginClient(client):
         client.send("Enter Your Password: ".encode())
         password = client.recv(BUFSIZE).decode().strip()
         
+        
         if username in login:
             if login[username] == password:  # logins[username] returns password
                 client.send(f'{Fore.GREEN}Login Successful!'.encode())
@@ -55,7 +55,7 @@ def loginClient(client):
             response = client.recv(BUFSIZE).decode().strip()
             if response.lower() == "yes" or response.lower() == "y":
                 saveLogin(username, password)
-                client.send(f'{Fore.GREEN}Registration Success. You are now logged in.'.encode())
+                client.send(f'{Fore.GREEN}Registration Success. You are now logged in.'.encode())                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
                 print(Style.RESET_ALL)
                 print(f'{Fore.CYAN}--NEW ACCOUNT CREATED--')
                 print(Style.RESET_ALL)
@@ -72,14 +72,14 @@ def start():  # Creates Socket and Listens for Connections
     
     while True:
         client, addr = serverSocket.accept()
-        print(f"{Fore.YELLOW}Connected With: {addr}")
+        print(f"{Fore.GREEN}Connected With: {addr}")
         print(Style.RESET_ALL)
         
         try:
             username = loginClient(client)  # Username for other clients
             users[username] = client  # Store the username and client socket
-            print(f'{Style.BRIGHT}Connected Users: {list(users.keys())}')  # Shows Users Connected on Dictionary
-            client.send(f'Number of Connected Users: {len(users)}'.encode())
+            print(f'Connected Users: {list(users.keys())}')  # Shows Users Connected on Dictionary
+            client.send(f'{Fore.CYAN}---Number Of Users Online: {len(users)}---'.encode())
 
             connectionMessage = (f'{Fore.GREEN}---{username} Connected---')
             print(Style.RESET_ALL)
@@ -111,9 +111,9 @@ def chatSend(message, senderClient):  # Sends to All Clients Except Sender
             try:
                 client.send(message.encode())
             except:
-                print(f"Failed to send message to {uname}")
+                pass
 
-def chatRead(client, username):  # Server Log, Reads Messages from Client
+def chatRead(client, username):  # Server Log / Reads Messages from Client
     global message
     while True: 
         try:

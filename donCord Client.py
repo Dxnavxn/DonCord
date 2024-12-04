@@ -2,6 +2,7 @@ import socket
 import threading
 import colorama
 from colorama import Fore, Back, Style
+from hashlib import sha256
 
 
 #INIT
@@ -26,10 +27,12 @@ def login():
 
     loginResponse =clientSocket.recv(BUFSIZE).decode()
     if "Successful" in loginResponse:
-        print(f'{Fore.GREEN}Login Successful')
+        print(f'{Fore.GREEN}---Login Successful---')
         print(Style.RESET_ALL)
-        print(f'Welcome To DonCord {userName}')
+        print(f'{Fore.BLUE}>>Welcome To DonCord, {userName}<<')
+        print(Style.RESET_ALL)
         print(clientSocket.recv(BUFSIZE).decode())
+        print(Style.RESET_ALL)
         return userName
     else:
         print(f'{Fore.YELLOW}No Account Found...')
@@ -39,9 +42,9 @@ def login():
         
     if "would you like to create an account " in loginResponse:
         createAccount = input("Do you want to create a new account (Yes/No): ").strip().lower()
-        
-        if createAccount == "yes" or createAccount == "y":
-            clientSocket.send("yes".encode())
+
+        if createAccount.lower() == "yes" or createAccount.lower() == "y":
+            clientSocket.send("yes".encode()) #fake yes
         
             loginResponse = clientSocket.recv(BUFSIZE).decode() # Account creation success message
             print(loginResponse)

@@ -2,6 +2,7 @@ import socket
 import threading
 import colorama
 from colorama import Fore, Back, Style
+from hashlib import sha256
 
 
 #INIT
@@ -14,16 +15,45 @@ ADDRESS =(HOST,PORT)
 clientSocket = socket.socket()
 clientSocket.connect(ADDRESS)
 
-print(clientSocket.recv(BUFSIZE).decode())
-userName = input(">")
+def login():
+    print(clientSocket.recv(BUFSIZE).decode())
+    userName = input(">")
+    clientSocket.send(userName.encode())
 
-clientSocket.send(userName.encode())
-print(f'Welcome To DonCord, {userName}')
-print(clientSocket.recv(BUFSIZE).decode())
+    print(clientSocket.recv(BUFSIZE).decode())
+    password = input(">")
+    hashPassword = sha256(password.encode()).hexdigest()
+    clientSocket.send(hashPassword.encode())
 
 
+    loginResponse =clientSocket.recv(BUFSIZE).decode()
+    if "Successful" in loginResponse:
+        print(f'{Fore.GREEN}Login Successful')
+        print(Style.RESET_ALL)
+        print(f'Welcome To DonCord {userName}')
+        print(clientSocket.recv(BUFSIZE).decode())
+        return userName
+    else:
+        print(f'{Fore.YELLOW}No Account Found...')
+        print(Style.RESET_ALL)
 
-serverMessage = ""
+
+        
+    if "would you like to create an account " in loginResponse:
+        createAccount = input("Do you want to create a new account (Yes/No): ").strip().lower()
+
+        if createAccount.lower() == "yes" or createAccount.lower() == "y":
+            clientSocket.send("yes".encode()) #fake yes
+        
+            loginResponse = clientSocket.recv(BUFSIZE).decode() # Account creation success message
+            print(loginResponse)
+            return userName
+        else:
+            print(f'{Fore.RED}Login failed. Try again.')
+            print(Style.RESET_ALL)
+            clientSocket.close()
+            exit()
+
 
 def chatSend():
     while True:
@@ -31,7 +61,6 @@ def chatSend():
         clientSocket.send((f'{message}').encode())
         
 def chatRead():
-    global serverMessage
     while True:
             serverMessage = clientSocket.recv(BUFSIZE).decode()
             print(serverMessage)
@@ -39,7 +68,8 @@ def chatRead():
 
         
 
-        
+userName = login()
+
 chatThread = threading.Thread(target=chatSend)
 readThread = threading.Thread(target=chatRead)
 
