@@ -13,12 +13,13 @@ users = {}  # Dictionary to store (username, client_socket)
 message = ""
 
 def loadLogin(): # Loads The Login Text File
-    login = {}
+    login = {} #Dictionary to store(username, password)
     try:
         file = open(loginFile, "r")
         for line in file:
             username, password = line.strip().split(",")
             login[username] = password # login[username] returns password
+            print(f'what{username}')
         file.close()
     except FileNotFoundError:
         print("Login file not found. A new one will be created.")
@@ -28,27 +29,36 @@ def loadLogin(): # Loads The Login Text File
 
 
 def saveLogin(username, password): # Saves A Username And Password Pair
-    file = open(loginFile, "a") # a = append | adds text to file instead of overwriting the entire file. 
+    file = open(loginFile, "a") # "a" = append | adds text to file instead of overwriting the entire file. 
     file.write(f'{username},{password}\n')
     file.close()
-    return(f'Saved Login: ')
     
 def loginClient(client):
-    login = loadLogin()
+    login = loadLogin() #Gets Login file
+    
     while True:
-        client.send("Enter Your Username: ".encode())
-        username = client.recv(BUFSIZE).decode().strip() # Strip = Removes any blank spaces and just takes text
+        client.send("Enter Your Username (No Spaces): ".encode())
+        username = client.recv(BUFSIZE).decode().strip() # .strip() = Removes any blank spaces and just takes text
         client.send("Enter Your Password (Case Sensitive): ".encode())
         password = client.recv(BUFSIZE).decode().strip()
         
         
-        if username in login:
+        if username in login: #If the username is in the login file
             if login[username] == password:  # logins[username] returns password
-                client.send(f'{Fore.GREEN}Login Successful!'.encode())
+                client.send(f'Login Successful'.encode())
+                print(f'{Fore.GREEN}---{username} Has Logged In--- ')
+                print(Style.RESET_ALL)
                 return username
+            elif login[username] != password:
+                client.send(f'Username Already Taken.'.encode())
+                continue
             else:
-                print("Incorrect Login. Try Again.")
-                client.send("Incorrect password. Try again.".encode())
+                client.send(f'Incorrect Login For {username}. Trying Again..'.encode())
+                continue # Allow the user to try logging in again
+            
+
+            
+
         else:
             client.send(f'{Fore.YELLOW}Username not found, would you like to create an account (yes/no):  '.encode())
             print(Style.RESET_ALL)
@@ -57,12 +67,14 @@ def loginClient(client):
                 saveLogin(username, password)
                 client.send(f'{Fore.GREEN}Registration Success. You are now logged in.'.encode())                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
                 print(Style.RESET_ALL)
-                print(f'{Fore.MAGENTA}--NEW ACCOUNT CREATED--')
+                print(f'{Fore.MAGENTA}--[[{username, password}]] NEW ACCOUNT CREATED--')
                 print(Style.RESET_ALL)
                 return username  # Proceed with logged-in user after registration
             else: # NO
                 client.send(f'{Fore.RED}Login Failed, Try Again...'.encode())
                 continue  # Allow the user to try logging in again
+            
+        
 
 def start():  # Creates Socket and Listens for Connections
     serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Searches for IPV4 connections

@@ -34,10 +34,10 @@ def login():
         print(clientSocket.recv(BUFSIZE).decode())
         print(Style.RESET_ALL)
         return userName
-    else:
-        print(f'{Fore.YELLOW}No Account Found...')
-        print(Style.RESET_ALL)
 
+    if "Trying Again.." in loginResponse:
+        print(f'{Fore.RED}Incorrect Username or Password. Try Again')
+        print(Style.RESET_ALL)
 
         
     if "would you like to create an account " in loginResponse:
