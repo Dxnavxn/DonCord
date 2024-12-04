@@ -22,16 +22,17 @@ def login():
 
     print(clientSocket.recv(BUFSIZE).decode())
     password = input(">")
-    hashPassword = sha256(password.encode()).hexdigest()
-    clientSocket.send(hashPassword.encode())
+    clientSocket.send(password.encode())
 
 
     loginResponse =clientSocket.recv(BUFSIZE).decode()
     if "Successful" in loginResponse:
-        print(f'{Fore.GREEN}Login Successful')
+        print(f'{Fore.GREEN}---Login Successful---')
         print(Style.RESET_ALL)
-        print(f'Welcome To DonCord {userName}')
+        print(f'{Fore.BLUE}>>Welcome To DonCord, {userName}<<')
+        print(Style.RESET_ALL)
         print(clientSocket.recv(BUFSIZE).decode())
+        print(Style.RESET_ALL)
         return userName
     else:
         print(f'{Fore.YELLOW}No Account Found...')

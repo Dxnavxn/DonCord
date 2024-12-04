@@ -38,7 +38,7 @@ def loginClient(client):
     while True:
         client.send("Enter Your Username: ".encode())
         username = client.recv(BUFSIZE).decode().strip() # Strip = Removes any blank spaces and just takes text
-        client.send("Enter Your Password: ".encode())
+        client.send("Enter Your Password (Case Sensitive): ".encode())
         password = client.recv(BUFSIZE).decode().strip()
         
         
@@ -57,7 +57,7 @@ def loginClient(client):
                 saveLogin(username, password)
                 client.send(f'{Fore.GREEN}Registration Success. You are now logged in.'.encode())                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
                 print(Style.RESET_ALL)
-                print(f'{Fore.CYAN}--NEW ACCOUNT CREATED--')
+                print(f'{Fore.MAGENTA}--NEW ACCOUNT CREATED--')
                 print(Style.RESET_ALL)
                 return username  # Proceed with logged-in user after registration
             else: # NO

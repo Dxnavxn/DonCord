@@ -17,7 +17,7 @@ clientSocket.connect(ADDRESS)
 
 def login():
     print(clientSocket.recv(BUFSIZE).decode())
-    userName = input(">")
+    userName = input(">").lower()
     clientSocket.send(userName.encode())
 
     print(clientSocket.recv(BUFSIZE).decode())
@@ -48,6 +48,8 @@ def login():
         
             loginResponse = clientSocket.recv(BUFSIZE).decode() # Account creation success message
             print(loginResponse)
+            print(f'{Fore.BLUE}>>Welcome To DonCord, {userName}<<')
+            print(Style.RESET_ALL)
             return userName
         else:
             print(f'{Fore.RED}Login failed. Try again.')
