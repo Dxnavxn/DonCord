@@ -5,12 +5,13 @@ from colorama import Fore, Back, Style
 
 
 HOST = 'localhost'
-PORT = 4998  # Port should be between 1024-9999 for non-root users
+PORT = 499 # Port should be between 1024-9999 for non-root users
 BUFSIZE = 1024
 ADDRESS = (HOST, PORT)
 
 message = ""
 users = {}  # Dictornary to store (username, client_socket)
+
 
 def start():  # Creates Socket and Listens for Connections
     serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #Searches for IPV4 connections
@@ -23,7 +24,6 @@ def start():  # Creates Socket and Listens for Connections
         print(f"{Fore.YELLOW}Connected With: {addr}")
         print(Style.RESET_ALL) #Resets text style
         
-        client.send("Enter a Username: ".encode())# Prompt client for username
         username = client.recv(BUFSIZE).decode()
         users[username] = client  # Store the username and client socket
         print(f'{Style.BRIGHT}Connected Users: {list(users.keys())}') #Shows Users Connected On Dictionary

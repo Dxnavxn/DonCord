@@ -2,11 +2,11 @@ import socket
 import threading
 import colorama
 from colorama import Fore, Back, Style
-
+import sys
 
 #INIT
 HOST = 'localhost'
-PORT = 4998
+PORT = 4992
 BUFSIZE = 1024
 ADDRESS =(HOST,PORT)
 
@@ -14,11 +14,11 @@ ADDRESS =(HOST,PORT)
 clientSocket = socket.socket()
 clientSocket.connect(ADDRESS)
 
-print(clientSocket.recv(BUFSIZE).decode())
-userName = input(">")
+usernamePrompt = input(f'{Fore.CYAN}{Style.BRIGHT}Enter a Username: ')
+clientSocket.send(usernamePrompt.encode())
+print(Style.RESET_ALL) #Resets text style
 
-clientSocket.send(userName.encode())
-print(f'Welcome To DonCord, {userName}')
+print(f'Welcome To DonCord, {usernamePrompt}')
 print(clientSocket.recv(BUFSIZE).decode())
 
 
@@ -27,8 +27,14 @@ serverMessage = ""
 
 def chatSend():
     while True:
-        message = input(">>")
-        clientSocket.send((f'{message}').encode())
+        input_str = input(">> ")
+        # Move cursor up one line, clear line
+        sys.stdout.write('\033[F')   # move cursor up
+        sys.stdout.write('\033[K')   # clear line
+        sys.stdout.flush()
+        clientSocket.send(input_str.encode())
+        print(f'YOU: {input_str}')
+
         
 def chatRead():
     global serverMessage
