@@ -3,10 +3,11 @@ import threading
 import colorama
 from colorama import Fore, Back, Style
 import sys
+import os
 
 #INIT
 HOST = 'localhost'
-PORT = 4992
+PORT = 4991
 BUFSIZE = 1024
 ADDRESS =(HOST,PORT)
 
@@ -23,26 +24,39 @@ print(clientSocket.recv(BUFSIZE).decode())
 
 
 
-serverMessage = ""
 
 def chatSend():
+    global serverMessage
     while True:
-        input_str = input(">> ")
-        # Move cursor up one line, clear line
-        sys.stdout.write('\033[F')   # move cursor up
-        sys.stdout.write('\033[K')   # clear line
-        sys.stdout.flush()
-        clientSocket.send(input_str.encode())
-        print(f'YOU: {input_str}')
+        try:
+            inputStr = input(">>")
+            sys.stdout.write('\033[F')   # move cursor up
+            sys.stdout.write('\033[K')   # clear line
+            sys.stdout.flush()
+            clientSocket.send(inputStr.encode())
+            print(f'YOU: {inputStr}')
 
+        except:
+             break
         
 def chatRead():
     global serverMessage
     while True:
-            serverMessage = clientSocket.recv(BUFSIZE).decode()
-            print(serverMessage)
-            print(Style.RESET_ALL)
+            try:
+                serverMessage = clientSocket.recv(BUFSIZE).decode()
+                if not serverMessage:
+                     print(f'{Fore.RED}\nServer Disconnected...{Style.RESET_ALL}')
+                     break
+                
+                sys.stdout.write('\r')   # move to start of line
+                sys.stdout.write('\033[K')   # clear line
 
+                sys.stdout.write(f'{serverMessage}\n')
+                sys.stdout.write(">> ")
+                sys.stdout.flush()
+            except:
+                 break
+    os._exit(0)
         
 
         

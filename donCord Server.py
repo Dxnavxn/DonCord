@@ -5,7 +5,7 @@ from colorama import Fore, Back, Style
 
 
 HOST = 'localhost'
-PORT = 499 # Port should be between 1024-9999 for non-root users
+PORT = 4991 #Port should be between 1024-9999 for non-root users
 BUFSIZE = 1024
 ADDRESS = (HOST, PORT)
 
@@ -18,29 +18,45 @@ def start():  # Creates Socket and Listens for Connections
     serverSocket.bind(ADDRESS)
     serverSocket.listen(5)
     print("Server is searching for connections...")
-    
-    while True:
-        client, addr = serverSocket.accept()
-        print(f"{Fore.YELLOW}Connected With: {addr}")
-        print(Style.RESET_ALL) #Resets text style
-        
-        username = client.recv(BUFSIZE).decode()
-        users[username] = client  # Store the username and client socket
-        print(f'{Style.BRIGHT}Connected Users: {list(users.keys())}') #Shows Users Connected On Dictionary
-        client.send(f'Number of Connected Users: {len(users)}'.encode())
+    try:
+        while True:
+            client, addr = serverSocket.accept()
+            print(f"{Fore.YELLOW}Connected With: {addr}")
+            print(Style.RESET_ALL) #Resets text style
+            
+            username = client.recv(BUFSIZE).decode()
+            users[username] = client  # Store the username and client socket
+            print(f'{Style.BRIGHT}Connected Users: {list(users.keys())}') #Shows Users Connected On Dictionary
+            client.send(f'Number of Connected Users: {len(users)}'.encode())
 
-        
-        connectionMessage = (f'{Fore.GREEN}---{username} connected---')
-        print(Style.RESET_ALL) #Resets text style
-        chatSend(connectionMessage, client) #Sends Client Connected Message To Other Clients
-        
-        print(f'{Fore.CYAN}---Number of Connected Clients: {len(users)}---') #Server Logs Number Of Connections
-        print(Style.RESET_ALL) #Resets text style
+            
+            connectionMessage = (f'{Fore.GREEN}---{username} connected---{Style.RESET_ALL}')
+            chatSend(connectionMessage, client) #Sends Client Connected Message To Other Clients
+            
+            print(f'{Fore.CYAN}---Number of Connected Clients: {len(users)}---') #Server Logs Number Of Connections
+            print(Style.RESET_ALL) #Resets text style
 
-        # Start threads for reading and sending messages
-        clientRead = threading.Thread(target=chatRead, args=(client, username)) #Makes Reading Thread
-        clientRead.start() #Starts Reading Thread
-        
+            # Start threads for reading and sending messages
+            clientRead = threading.Thread(target=chatRead, args=(client, username)) #Makes Reading Thread
+            clientRead.start() #Starts Reading Thread
+
+    # WHEN CTRL+C IS PRESSED
+    except KeyboardInterrupt: 
+        print(f'{Fore.RED}Server Shutting Down...{Style.RESET_ALL}')
+
+    #Server Disconnect Message
+    finally: 
+        for uname,c in users.items(): # For All Clients in Server
+            try:
+                c.send(f'{Fore.RED}Server is Shutting Down...'.encode())
+                c.close()
+            except:
+                pass #Ignores All Errors
+        serverSocket.close()
+        print(f'{Fore.RED}Server Socket Closed...{Style.RESET_ALL}')
+
+
+
 def remove_user(username, client): #Removes Users 
     global users
     disconnectionMessage =(f'{Fore.RED}---{username} has disconnected---') 
