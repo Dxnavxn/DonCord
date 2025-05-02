@@ -4,5 +4,5 @@
     Client Connected Color -DONE-
     Client Disconnected Color -DONE-
     Sever Log Color
-4. Client shows "You:" instead of chosen username
+4. Client shows "You:" instead of chosen username -DONE-
 5. Fake Loading?????
