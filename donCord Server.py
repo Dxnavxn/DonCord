@@ -1,6 +1,7 @@
 import socket
 import threading
 import colorama
+import time
 from colorama import Fore, Back, Style
 
 
@@ -43,12 +44,15 @@ def start():  # Creates Socket and Listens for Connections
     # WHEN CTRL+C IS PRESSED
     except KeyboardInterrupt: 
         print(f'{Fore.RED}Server Shutting Down...{Style.RESET_ALL}')
+        client.send(f'{Fore.RED}Server is Shutting Down...'.encode())
+        time.sleep(3)
+        
 
     #Server Disconnect Message
     finally: 
         for uname,c in users.items(): # For All Clients in Server
             try:
-                c.send(f'{Fore.RED}Server is Shutting Down...'.encode())
+                c.shutdown(socket.SHUT_RDWR)  # <- force-close the socket
                 c.close()
             except:
                 pass #Ignores All Errors
@@ -70,23 +74,26 @@ def remove_user(username, client): #Removes Users
 def chatSend(message, senderClient):  # Sends to All Clients Except Sender
     for uname, client in users.items():  # Use .items() to unpack key-value pairs
         if client != senderClient:
-            try:
-                client.send(message.encode())
-            except:
-                print(f"Failed to send message to {uname}")
+            client.send(message.encode())
+      
             
 def chatRead(client, username):  # Server Log, Reads Messages from Client
-    global message
     while True:
         try:
             message = client.recv(BUFSIZE).decode()
-            if message:
-                print(f"{username}: {message}")
-                chatSend(f"{username}: {message}", client)
+            if not message:
+                break
+            if message == "/left":
+                remove_user(username,client)
+                break
+            print(f'{username}: {message}')
+            chatSend(f'{username}: {message}', client)
+
         except:
-            print(f"{username} has disconnected.")
             remove_user(username, client)
             break
+
+
 
 def main():
     start()

@@ -41,6 +41,7 @@ def chatSend():
         
 def chatRead():
     global serverMessage
+    clientSocket.settimeout(1.0)
     while True:
             try:
                 serverMessage = clientSocket.recv(BUFSIZE).decode()
@@ -54,6 +55,8 @@ def chatRead():
                 sys.stdout.write(f'{serverMessage}\n')
                 sys.stdout.write(">> ")
                 sys.stdout.flush()
+            except socket.timeout:
+                 continue
             except:
                  break
     os._exit(0)
@@ -66,5 +69,12 @@ readThread = threading.Thread(target=chatRead)
 chatThread.start()
 readThread.start()
 
-chatThread.join()
-readThread.join()
+try:
+    chatThread.join()
+    readThread.join()
+
+except KeyboardInterrupt: #When Pressing Cntrl + C
+     print(f'{Fore.RED}Leaving DonCord...')
+     clientSocket.send(b"/left")
+     clientSocket.close()
+     os._exit
