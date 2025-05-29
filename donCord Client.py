@@ -7,7 +7,7 @@ import os
 
 #INIT
 HOST = 'localhost'
-PORT = 4991
+PORT = 4990
 BUFSIZE = 1024
 ADDRESS =(HOST,PORT)
 

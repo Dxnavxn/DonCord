@@ -6,7 +6,7 @@ from colorama import Fore, Back, Style
 
 
 HOST = 'localhost'
-PORT = 4991 #Port should be between 1024-9999 for non-root users
+PORT = 4990 #Port should be between 1024-9999 for non-root users
 BUFSIZE = 1024
 ADDRESS = (HOST, PORT)
 
@@ -56,6 +56,7 @@ def start():  # Creates Socket and Listens for Connections
                 c.close()
             except:
                 pass #Ignores All Errors
+            
         serverSocket.close()
         print(f'{Fore.RED}Server Socket Closed...{Style.RESET_ALL}')
 
@@ -63,7 +64,7 @@ def start():  # Creates Socket and Listens for Connections
 
 def remove_user(username, client): #Removes Users 
     global users
-    disconnectionMessage =(f'{Fore.RED}---{username} has disconnected---') 
+    disconnectionMessage =(f'{Fore.RED}---{username} has disconnected---{Style.RESET_ALL}') 
     print(disconnectionMessage)
     chatSend(disconnectionMessage, None) #Sends Disconnection Message To Other Clients
     print(Style.RESET_ALL) #Resets text style
@@ -75,7 +76,7 @@ def chatSend(message, senderClient):  # Sends to All Clients Except Sender
     for uname, client in users.items():  # Use .items() to unpack key-value pairs
         if client != senderClient:
             client.send(message.encode())
-      
+    
             
 def chatRead(client, username):  # Server Log, Reads Messages from Client
     while True:
